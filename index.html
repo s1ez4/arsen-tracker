@@ -104,14 +104,20 @@ const PHRASES = [
   "Ты можешь, Арсен. Разница только в том, кто не остановился.",
 ];
 
-/* --- 2. ЛОР — наши истории и шутки. Формат: { title: "…", text: "…" }, --- */
+/* --- 2. ЛОР — наши истории и шутки. Формат: { xp: 0, title: "…", text: "…" },
+   xp — сколько опыта нужно набрать, чтобы история открылась (0 = открыта сразу).
+   Свои истории Арсен может добавить прямо на сайте во вкладке «Лор». --- */
 const LORE = [
-  { title: "Бассейн",
+  { xp: 0, title: "Бассейн",
     text: "Мы вместе ходим в бассейн. Правило простое: кто первым сдох на дорожке — тот рассказывает, что выучил за неделю.\nЕсли рассказывать нечего — плывёт ещё 200 метров. Так и качаемся: лёгкие и мозг." },
-  { title: "Цифровой след",
+  { xp: 50, title: "Цифровой след",
     text: "Пентестер должен уметь найти о человеке всё по открытым источникам. И понимать, что о нём самом найдут то же самое.\nПоэтому правило: в сети про тебя — только то, что не стыдно показать на собесе. Write-up'ы, CTF, GitHub. Остальное — офлайн и между своими." },
-  { title: "Тут будет наш лор",
-    text: "Сюда впиши историю, которую знаем только мы." },
+  { xp: 150, title: "Вырубленное электричество",
+    text: "Тот самый вечер, когда вырубили свет. Темнота, ноут на последних процентах, роутер мёртв.\nАрсен заявил, что это не авария, а физическая атака на инфраструктуру, и сел писать отчёт для энергосбыта при фонарике телефона.\nВывод для пентестера: электричество — тоже часть поверхности атаки. Самый надёжный DoS — рубильник." },
+  { xp: 300, title: "Разбитый телефон",
+    text: "Телефон Арсена — отдельный экспонат. Трещины по экрану разбегаются, как топология сети после nmap.\nАрсен уверяет, что это не трещины, а визуализация маршрутов. Попасть пальцем в нужную букву — классический brute force: с третьей попытки получается.\nЗато никакой шолдерсёрфинг не страшен: что на экране, не видит даже владелец." },
+  { xp: 500, title: "Дверь со сломанным замком",
+    text: "Дверь закрыта. Ключ есть. Замок сломан. Толку от ключа — ноль.\nЭто был первый настоящий физический пентест Арсена: цель — попасть внутрь, инструментов нет, lockpicking ещё не изучали.\nЧем всё закончилось — знают двое. Отчёт засекречен. Вывод: самая надёжная защита — та, что сломана так, что не пускает даже владельца." },
 ];
 
 /* --- 3. МЕМЫ из папки memes/ рядом с index.html. Просто имена файлов. --- */
@@ -556,6 +562,10 @@ const PROGRESS_MEMES = {
   .lore h3 { margin: 0 0 8px; font-size: .95rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text); }
   .lore h3::before { content: "> "; color: var(--accent-text); }
   .lore p { margin: 0; white-space: pre-line; color: #cfcfcf; }
+  .locked-lore { border-style: dashed; }
+  .locked-lore h3 { color: var(--muted); letter-spacing: 0; filter: grayscale(1); }
+  .locked-lore h3::before { content: ""; }
+  .locked-lore b { color: var(--text); font-weight: 600; }
 
   /* ===== МЕМЫ ===== */
   .meme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
@@ -751,8 +761,15 @@ const PROGRESS_MEMES = {
 
   <!-- ================= ЛОР ================= -->
   <section class="tab" id="tab-lore">
-    <div class="card"><h2>лор</h2><p class="muted" style="margin:0;font-size:.9rem">Легенды, которые знают только свои.</p></div>
+    <div class="card"><h2>лор</h2><p class="muted" style="margin:0;font-size:.9rem">Легенды, которые знают только свои. Новые открываются по мере роста XP. <span id="loreCount" class="mono"></span></p></div>
     <div id="loreList"></div>
+    <div id="customLoreList"></div>
+    <div class="card">
+      <h2>добавить_свою_историю</h2>
+      <input class="input" id="newLoreTitle" placeholder="заголовок" style="width:100%;margin-bottom:8px">
+      <textarea class="input" id="newLoreText" placeholder="что случилось…" style="width:100%;min-height:90px;font-family:var(--sans);font-size:.9rem;resize:vertical"></textarea>
+      <div class="row" style="margin-top:8px"><button class="btn primary" onclick="addCustomLore()">Добавить в лор</button></div>
+    </div>
     <div class="card" id="secretCard">
       <h2>секретный_лор.enc</h2>
       <p class="muted" style="margin:0 0 12px;font-size:.85rem">Зашифровано AES-256. Пароль знают двое.</p>
@@ -847,6 +864,8 @@ function defaultState() {
     money: { now: MONEY_START, goal: MONEY_GOAL },
     coffeePaid: 0,    // сколько кофе уже поставлено Серёже
     pending: null,    // «ушёл решать» — ждёт подтверждения XP
+    customLore: [],   // истории, которые Арсен добавил сам
+    loreUnlocked: null, // сколько историй из LORE уже открыто (чтобы показать «открыт новый лор»)
   };
 }
 
@@ -1220,6 +1239,7 @@ function afterChange() {
   save();
   render();
   checkLevelUp();
+  checkLoreUnlock();
 }
 
 // Защита: текст от пользователя (заметки, слова) превращаем в безопасный HTML
@@ -1535,9 +1555,64 @@ function deleteWord(i) {
 /* =====================================================================
    ЛОР
    ===================================================================== */
+function sortedLore() { return LORE.slice().sort((a, b) => (a.xp || 0) - (b.xp || 0)); }
+
 function renderLore() {
-  $("loreList").innerHTML = LORE.map(l =>
-    '<div class="card lore"><h3>' + esc(l.title) + '</h3><p>' + esc(l.text) + '</p></div>').join("");
+  const xp = totalXP();
+  const list = sortedLore();
+  const opened = list.filter(l => xp >= (l.xp || 0)).length;
+  $("loreCount").textContent = "Открыто " + opened + " из " + list.length + ".";
+  $("loreList").innerHTML = list.map(l => {
+    const need = l.xp || 0;
+    if (xp >= need) {
+      return '<div class="card lore"><h3>' + esc(l.title) + '</h3><p>' + esc(l.text) + '</p></div>';
+    }
+    // Закрытая карточка: название спрятано, видно только сколько осталось
+    const pct = Math.min(100, xp / need * 100);
+    return '<div class="card lore locked-lore">' +
+      '<h3>🔒 ' + "█".repeat(Math.min(14, Math.max(5, l.title.length))) + '</h3>' +
+      '<p class="muted">Откроется на <b>' + need + ' XP</b> · осталось ' + (need - xp) + '</p>' +
+      '<div class="bar" style="margin-top:10px"><div style="width:' + pct + '%"></div></div>' +
+    '</div>';
+  }).join("");
+
+  $("customLoreList").innerHTML = (state.customLore || []).map(l =>
+    '<div class="card lore"><div class="row" style="justify-content:space-between;align-items:flex-start;flex-wrap:nowrap">' +
+      '<h3>' + esc(l.title) + '</h3>' +
+      '<button class="icon-btn" title="Удалить" onclick="deleteCustomLore(\'' + l.id + '\')">🗑️</button></div>' +
+      '<p>' + esc(l.text) + '</p>' +
+      '<div class="muted mono" style="font-size:.7rem;margin-top:8px">от Арсена · ' + fmtDate(l.ts) + '</div>' +
+    '</div>').join("");
+}
+
+// Набрал XP → открылась новая история → уведомление
+function checkLoreUnlock() {
+  const xp = totalXP();
+  const opened = sortedLore().filter(l => xp >= (l.xp || 0));
+  if (state.loreUnlocked === null || state.loreUnlocked === undefined) {
+    state.loreUnlocked = opened.length; save(); return;   // первый запуск — без уведомлений
+  }
+  if (opened.length > state.loreUnlocked) {
+    const fresh = opened[opened.length - 1];
+    setTimeout(() => toast("📖 Открыт новый лор: «" + fresh.title + "»"), 900);
+  }
+  if (opened.length !== state.loreUnlocked) { state.loreUnlocked = opened.length; save(); }
+}
+
+function addCustomLore() {
+  const title = $("newLoreTitle").value.trim(), text = $("newLoreText").value.trim();
+  if (!title || !text) { toast("Нужны и заголовок, и история"); return; }
+  state.customLore = state.customLore || [];
+  state.customLore.push({ id: Date.now().toString(36), title, text, ts: new Date().toISOString() });
+  $("newLoreTitle").value = ""; $("newLoreText").value = "";
+  save(); renderLore();
+  toast("📖 История добавлена в лор");
+}
+
+function deleteCustomLore(id) {
+  if (!confirm("Удалить эту историю из лора?")) return;
+  state.customLore = state.customLore.filter(l => l.id !== id);
+  save(); renderLore();
 }
 
 /* =====================================================================
@@ -1725,13 +1800,14 @@ function render() {
   renderLog();
   renderBosses();
   renderEnglish();
+  renderLore();
 }
 
 initWords();
 renderPhrase();
 renderXpButtons();
 renderLogFilter();
-renderLore();
+checkLoreUnlock();
 renderLinks();
 renderPending();
 renderMemes();
