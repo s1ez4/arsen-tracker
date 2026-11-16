@@ -674,6 +674,15 @@ const PROGRESS_MEMES = {
   <section class="tab" id="tab-lore">
     <div class="card"><h2>лор</h2><p class="muted" style="margin:0;font-size:.9rem">Легенды, которые знают только свои.</p></div>
     <div id="loreList"></div>
+    <div class="card" id="secretCard">
+      <h2>секретный_лор.enc</h2>
+      <p class="muted" style="margin:0 0 12px;font-size:.85rem">Зашифровано AES-256. Пароль знают двое.</p>
+      <form class="row" onsubmit="event.preventDefault(); unlockSecret();">
+        <input type="password" id="secretPass" class="input" placeholder="пароль" autocomplete="off" style="flex:1;min-width:160px">
+        <button class="btn primary" type="submit" id="secretBtn">🔓 Открыть</button>
+      </form>
+      <div id="secretOut"></div>
+    </div>
   </section>
 
   <!-- ================= МЕМЫ ================= -->
@@ -735,6 +744,8 @@ const PROGRESS_MEMES = {
   </div>
 </div>
 
+<!-- Зашифрованный секретный лор. Если файла ещё нет — просто ничего не загрузится. -->
+<script src="secret.js"></script>
 <script>
 /* =====================================================================
    ХРАНЕНИЕ ДАННЫХ (localStorage)
@@ -1383,6 +1394,40 @@ function deleteWord(i) {
 function renderLore() {
   $("loreList").innerHTML = LORE.map(l =>
     '<div class="card lore"><h3>' + esc(l.title) + '</h3><p>' + esc(l.text) + '</p></div>').join("");
+}
+
+/* =====================================================================
+   СЕКРЕТНЫЙ ЛОР: расшифровка паролем прямо в браузере (WebCrypto)
+   Пароль → PBKDF2 (600 000 раундов) → ключ AES-256 → расшифровываем secret.js
+   ===================================================================== */
+const fromB64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+
+async function unlockSecret() {
+  const s = window.SECRET_LORE;
+  const pass = $("secretPass").value;
+  if (!s) { toast("Секретный лор ещё не зашифрован"); return; }
+  if (!pass) { toast("Введи пароль"); return; }
+  if (!window.crypto || !crypto.subtle) { toast("Этот браузер не умеет расшифровывать"); return; }
+  $("secretBtn").disabled = true;
+  $("secretBtn").textContent = "⏳ расшифровка…";
+  try {
+    const baseKey = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+    const key = await crypto.subtle.deriveKey(
+      { name: "PBKDF2", salt: fromB64(s.salt), iterations: s.iter, hash: "SHA-256" },
+      baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+    const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(s.iv) }, key, fromB64(s.data));
+    const items = JSON.parse(new TextDecoder().decode(plain));
+    $("secretOut").innerHTML = items.map(l =>
+      '<div class="lore" style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px">' +
+      '<h3>' + esc(l.title) + '</h3><p>' + esc(l.text) + '</p></div>').join("");
+    $("secretPass").value = "";
+    toast("🔓 Доступ получен");
+  } catch (e) {
+    toast("❌ Неверный пароль");   // AES-GCM сам проверяет: неверный пароль = ошибка расшифровки
+  } finally {
+    $("secretBtn").disabled = false;
+    $("secretBtn").textContent = "🔓 Открыть";
+  }
 }
 
 /* =====================================================================
