@@ -163,20 +163,22 @@ const START_WORDS = [
   ["write-up", "разбор решения"],
 ];
 
-/* --- 5. ДЕЙСТВИЯ И XP (из роадмапа) --- */
+/* --- 5. ДЕЙСТВИЯ И XP (из роадмапа).
+   url — куда сразу перекинуть при нажатии (откроется в новой вкладке), а XP подтверждаешь,
+   когда вернёшься. Без url — XP засчитывается сразу. --- */
 const ACTIONS = [
   { id: "study",      icon: "📚", label: "День учёбы 30+ мин",    xp: 5 },
-  { id: "english",    icon: "🗣️", label: "30 мин английского",   xp: 5 },
-  { id: "stepik",     icon: "🧩", label: "Задача Stepik/HackerLab", xp: 5 },
-  { id: "portswigger",icon: "🕸️", label: "Лаба PortSwigger",      xp: 10 },
-  { id: "thm",        icon: "🏠", label: "Комната TryHackMe",     xp: 15 },
-  { id: "htb_easy",   icon: "📦", label: "HTB Easy",              xp: 40 },
-  { id: "htb_medium", icon: "💀", label: "HTB Medium",            xp: 80 },
-  { id: "writeup",    icon: "✍️", label: "Write-up опубликован",  xp: 30 },
-  { id: "ctf",        icon: "🚩", label: "Участие в CTF",         xp: 50 },
+  { id: "english",    icon: "🗣️", label: "30 мин английского",   xp: 5,  url: "https://www.duolingo.com/learn" },
+  { id: "stepik",     icon: "🧩", label: "Задача Stepik/HackerLab", xp: 5, url: "https://hackerlab.pro" },
+  { id: "portswigger",icon: "🕸️", label: "Лаба PortSwigger",      xp: 10, url: "https://portswigger.net/web-security/all-labs" },
+  { id: "thm",        icon: "🏠", label: "Комната TryHackMe",     xp: 15, url: "https://tryhackme.com/dashboard" },
+  { id: "htb_easy",   icon: "📦", label: "HTB Easy",              xp: 40, url: "https://app.hackthebox.com/machines" },
+  { id: "htb_medium", icon: "💀", label: "HTB Medium",            xp: 80, url: "https://app.hackthebox.com/machines" },
+  { id: "writeup",    icon: "✍️", label: "Write-up опубликован",  xp: 30, url: "https://github.com" },
+  { id: "ctf",        icon: "🚩", label: "Участие в CTF",         xp: 50, url: "https://ctfnews.ru" },
   { id: "ctf_prize",  icon: "🏆", label: "Призовое место в CTF",  xp: 300 },
   { id: "bugbounty",  icon: "🐛", label: "Принятый баг (bug bounty)", xp: 500 },
-  { id: "apply",      icon: "📨", label: "Отклик на вакансию",    xp: 10 },
+  { id: "apply",      icon: "📨", label: "Отклик на вакансию",    xp: 10, url: "https://hh.ru/search/vacancy?text=%D0%BF%D0%B5%D0%BD%D1%82%D0%B5%D1%81%D1%82" },
   { id: "interview",  icon: "🤝", label: "Собеседование",         xp: 100 },
   { id: "cert",       icon: "📜", label: "Сертификат",            xp: 1000 },
 ];
@@ -212,6 +214,52 @@ const BOSSES = [
     "30 машин с write-up'ами",
     "Три CTF в команде",
     "🎉 ОФФЕР ПОДПИСАН" ],
+];
+
+/* --- 7.5. ССЫЛКИ — вкладка «Ссылки». Формат: ["Название", "адрес", "подсказка"] --- */
+const LINKS = [
+  { group: "Платформы для практики", items: [
+    ["TryHackMe", "https://tryhackme.com", "комнаты с нуля, пути Pre Security и Jr Penetration Tester"],
+    ["HackTheBox", "https://app.hackthebox.com/machines", "машины Easy → Medium"],
+    ["HTB Academy", "https://academy.hackthebox.com", "путь Penetration Tester"],
+    ["PortSwigger Academy", "https://portswigger.net/web-security/all-labs", "лучшее по вебу, бесплатно"],
+    ["HackerLab", "https://hackerlab.pro", "CTF-задачи на русском"],
+    ["OverTheWire Bandit", "https://overthewire.org/wargames/bandit/", "Linux через игру"],
+    ["picoCTF", "https://picoctf.org", "CTF для начинающих"],
+    ["Standoff 365", "https://standoff365.com", "киберполигон"],
+  ]},
+  { group: "Курсы Stepik", items: [
+    ["Введение в Linux", "https://stepik.org/course/73", "уровень 1"],
+    ["Базовый курс по CTF", "https://stepik.org/course/132488", "уровень 1"],
+    ["Поколение Python", "https://stepik.org/course/58852", "уровень 2"],
+    ["Основы этичного хакинга", "https://stepik.org/course/194556", "уровень 2"],
+    ["Пентест инфраструктуры для начинающих", "https://stepik.org/course/200203", "уровень 4"],
+    ["Пентест корп. сети. Подготовка к OSCP", "https://stepik.org/course/288005", "уровень 4"],
+  ]},
+  { group: "Теория и шпаргалки", items: [
+    ["Сети для самых маленьких", "https://linkmeup.gitbook.io/sdsm", "сети с нуля"],
+    ["OWASP Top 10", "https://owasp.org/Top10/", "главные веб-уязвимости"],
+    ["HackTricks", "https://book.hacktricks.wiki", "шпаргалка по всему"],
+    ["GTFOBins", "https://gtfobins.github.io", "повышение привилегий в Linux"],
+    ["Журнал «Хакер»", "https://xakep.ru", "статьи, в т. ч. про AD"],
+    ["Codeby", "https://codeby.net", "форум, разборы, CTF"],
+  ]},
+  { group: "CTF", items: [
+    ["CTFtime", "https://ctftime.org/event/list/upcoming", "мировой календарь CTF"],
+    ["CTFnews", "https://ctfnews.ru", "календарь CTF по России"],
+    ["SPbCTF", "https://spbctf.com", "сообщество, лекции и разборы"],
+    ["CTF Antichat", "https://ctf.antichat.com", "вечный тренировочный CTF"],
+  ]},
+  { group: "Работа и стажировки", items: [
+    ["hh.ru: пентест", "https://hh.ru/search/vacancy?text=%D0%BF%D0%B5%D0%BD%D1%82%D0%B5%D1%81%D1%82", "вакансии"],
+    ["PT Start", "https://pt-start.ptsecurity.com", "стажировка Positive Technologies"],
+    ["Kaspersky SafeBoard", "https://safeboard.kaspersky.ru", "стажировка Касперского"],
+    ["Standoff Bug Bounty", "https://bugbounty.standoff365.com", "первые деньги за баги"],
+  ]},
+  { group: "Английский", items: [
+    ["Duolingo", "https://www.duolingo.com", "15 минут общего английского"],
+    ["Anki", "https://apps.ankiweb.net", "карточки со словами"],
+  ]},
 ];
 
 /* --- 8. ДЕНЬГИ (в тысячах рублей) --- */
@@ -396,6 +444,33 @@ const PROGRESS_MEMES = {
   .xp-btn .ic { font-size: 1.1rem; }
   .xp-btn .lb { font-size: .84rem; line-height: 1.25; }
   .xp-btn .xp { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
+  .xp-btn .go { color: var(--muted); opacity: .7; }
+  .xp-cell { position: relative; background: var(--bg); display: flex; }
+  .xp-cell .xp-btn { flex: 1; }
+  .xp-quick {
+    position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; line-height: 1;
+    font-family: var(--mono); font-size: 1rem; background: none; color: var(--muted);
+    border: 1px solid var(--border-strong); cursor: pointer;
+  }
+  .xp-quick:hover { color: var(--on-accent); background: var(--accent); border-color: var(--accent); }
+
+  /* ===== ПЛАШКА «СДЕЛАЛ?» ===== */
+  .pending { display: none; border: 1px solid var(--accent); padding: 14px; margin-bottom: 16px; gap: 10px; flex-direction: column; }
+  .pending.show { display: flex; }
+  .pending-text b { color: var(--text); }
+  .pending .input { width: 100%; }
+
+  /* ===== ССЫЛКИ ===== */
+  .link-row {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 0;
+    border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text);
+  }
+  .link-row:last-child { border-bottom: none; }
+  .link-row:hover .link-title { color: var(--accent-text); }
+  .link-title { font-weight: 500; }
+  .link-hint { grid-column: 1; font-size: .8rem; color: var(--muted); }
+  .link-host { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-family: var(--mono); font-size: .72rem; color: var(--muted); white-space: nowrap; }
+  @media (max-width: 480px) { .link-host { display: none; } }
 
   .float-xp {
     position: fixed; z-index: 100; pointer-events: none;
@@ -523,9 +598,13 @@ const PROGRESS_MEMES = {
     <button data-tab="english">🗣️ Английский</button>
     <button data-tab="lore">📖 Лор</button>
     <button data-tab="memes">🖼️ Мемы</button>
+    <button data-tab="links">🔗 Ссылки</button>
   </nav>
 
   <!-- ================= ГЛАВНАЯ ================= -->
+  <!-- Плашка «ушёл решать — сделал?» (видна на всех вкладках) -->
+  <div class="pending" id="pending"></div>
+
   <section class="tab active" id="tab-home">
 
     <div class="card level-card">
@@ -685,6 +764,12 @@ const PROGRESS_MEMES = {
     </div>
   </section>
 
+  <!-- ================= ССЫЛКИ ================= -->
+  <section class="tab" id="tab-links">
+    <div class="card"><h2>ссылки</h2><p class="muted" style="margin:0;font-size:.85rem">Всё из роадмапа в одном месте. Открывается в новой вкладке.</p></div>
+    <div id="linksList"></div>
+  </section>
+
   <!-- ================= МЕМЫ ================= -->
   <section class="tab" id="tab-memes">
     <div class="card">
@@ -761,6 +846,7 @@ function defaultState() {
     words: null,      // словарь (создаётся из START_WORDS)
     money: { now: MONEY_START, goal: MONEY_GOAL },
     coffeePaid: 0,    // сколько кофе уже поставлено Серёже
+    pending: null,    // «ушёл решать» — ждёт подтверждения XP
   };
 }
 
@@ -1023,11 +1109,69 @@ function renderPhrase() {
 
 function renderXpButtons() {
   $("xpGrid").innerHTML = ACTIONS.map(a =>
-    '<button class="xp-btn" onclick="addAction(\'' + a.id + '\', this)">' +
-      '<span class="ic">' + a.icon + '</span>' +
-      '<span class="lb">' + a.label + '</span>' +
-      '<span class="xp">+' + a.xp + ' XP</span>' +
-    '</button>').join("");
+    '<div class="xp-cell">' +
+      '<button class="xp-btn" onclick="' + (a.url ? "goAction" : "addAction") + '(\'' + a.id + '\', this)"' +
+        (a.url ? ' title="Открыть ' + esc(new URL(a.url).hostname) + ' и потом подтвердить XP"' : '') + '>' +
+        '<span class="ic">' + a.icon + '</span>' +
+        '<span class="lb">' + a.label + '</span>' +
+        '<span class="xp">+' + a.xp + ' XP' + (a.url ? ' <span class="go">↗ ' + esc(new URL(a.url).hostname.replace(/^(www|app)\./, "")) + '</span>' : '') + '</span>' +
+      '</button>' +
+      (a.url ? '<button class="xp-quick" title="Засчитать сразу, без перехода" onclick="addAction(\'' + a.id + '\', this)">+</button>' : '') +
+    '</div>').join("");
+}
+
+/* =====================================================================
+   БЫСТРЫЕ ССЫЛКИ: переход на сайт → потом подтверждаешь XP
+   ===================================================================== */
+function goAction(id, btn) {
+  const a = ACTIONS.find(x => x.id === id);
+  window.open(a.url, "_blank", "noopener");
+  state.pending = { type: id, ts: new Date().toISOString(), btn: true };
+  save();
+  renderPending();
+}
+
+function renderPending() {
+  const p = state.pending, box = $("pending");
+  const a = p && ACTIONS.find(x => x.id === p.type);
+  if (!a) { box.classList.remove("show"); box.innerHTML = ""; return; }
+  box.innerHTML =
+    '<div class="pending-text">⏳ Ушёл решать: <b>' + esc(a.label) + '</b> — сделал?</div>' +
+    '<input class="input" id="pendingNote" placeholder="что именно (необязательно): название комнаты, машины…">' +
+    '<div class="row">' +
+      '<button class="btn primary" id="pendingYes" onclick="confirmPending(this)">✅ Засчитать +' + a.xp + ' XP</button>' +
+      '<button class="btn" onclick="cancelPending()">✖ Не сделал</button>' +
+    '</div>';
+  box.classList.add("show");
+}
+
+function confirmPending(btn) {
+  const p = state.pending;
+  if (!p) return;
+  const note = ($("pendingNote").value || "").trim();
+  state.pending = null;
+  addAction(p.type, btn);
+  if (note) { state.log[state.log.length - 1].note = note; afterChange(); }
+  renderPending();
+}
+
+function cancelPending() {
+  state.pending = null;
+  save();
+  renderPending();
+  toast("Ок, без XP. Вернёшься — добьёшь.");
+}
+
+function renderLinks() {
+  $("linksList").innerHTML = LINKS.map(g =>
+    '<div class="card"><h2>' + esc(g.group) + '</h2>' +
+      g.items.map(([title, url, hint]) =>
+        '<a class="link-row" href="' + esc(url) + '" target="_blank" rel="noopener">' +
+          '<span class="link-title">' + esc(title) + '</span>' +
+          '<span class="link-hint">' + esc(hint || "") + '</span>' +
+          '<span class="link-host">' + esc(new URL(url).hostname.replace(/^www\./, "")) + ' ↗</span>' +
+        '</a>').join("") +
+    '</div>').join("");
 }
 
 function actionLabel(type) {
@@ -1588,6 +1732,8 @@ renderPhrase();
 renderXpButtons();
 renderLogFilter();
 renderLore();
+renderLinks();
+renderPending();
 renderMemes();
 render();
 checkLevelUp();
