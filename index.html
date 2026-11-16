@@ -7,7 +7,7 @@
 <!-- Шрифты: Inter (текст) и JetBrains Mono (заголовки). Без интернета подставятся системные. -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;500;600&family=Inter+Tight:wght@600;800&display=swap" rel="stylesheet">
 
 <script>
 /* =====================================================================
@@ -210,18 +210,27 @@ const ACTIONS = [
   { id: "cert",       icon: "📜", label: "Сертификат",            xp: 1000 },
 ];
 
-/* --- 6. УРОВНИ И НАГРАДЫ (награды Арсен может поменять под себя) --- */
+/* --- 6. УРОВНИ И НАГРАДЫ (награды Арсен может поменять под себя).
+   skills — что реально умеешь с этим званием, jobs — какие офферы уже реальны (из роадмапа). --- */
 const LEVELS = [
-  { title: "Рекрут",           icon: "🐣", xp: 0,    reward: "" },
-  { title: "Сетевик",          icon: "🌐", xp: 300,  reward: "Любимая еда / вечер без учёбы" },
-  { title: "Админ",            icon: "🖥️", xp: 800,  reward: "Наклейка на ноут / игра" },
-  { title: "Веб-хакер",        icon: "🕷️", xp: 1800, reward: "Подписка TryHackMe/HTB или платный курс на Stepik" },
-  { title: "Инфраструктурщик", icon: "🏰", xp: 3500, reward: "Хорошая мышь / наушники" },
-  { title: "Боец",             icon: "⚔️", xp: 6000, reward: "Сертификат + поход куда-нибудь с друзьями" },
-  { title: "Оффер",            icon: "👑", xp: null, reward: "Большая цель, которую Арсен выбирает сам" },
+  { title: "Рекрут",           icon: "🐣", xp: 0,    reward: "",
+    skills: "Рабочее место настроено, первые команды Linux", jobs: "пока никакие — ты в начале пути" },
+  { title: "Сетевик",          icon: "🌐", xp: 300,  reward: "Любимая еда / вечер без учёбы",
+    skills: "Сети (OSI, TCP/IP, DNS, HTTP) и Linux на уверенном уровне", jobs: "техподдержка / helpdesk — как трамплин" },
+  { title: "Админ",            icon: "🖥️", xp: 800,  reward: "Наклейка на ноут / игра",
+    skills: "Windows, основы Active Directory, скрипты на Python и Bash", jobs: "младший сисадмин, администратор СЗИ, SOC L1" },
+  { title: "Веб-хакер",        icon: "🕷️", xp: 1800, reward: "Подписка TryHackMe/HTB или платный курс на Stepik",
+    skills: "OWASP Top 10, Burp Suite, ручная эксплуатация веб-уязвимостей", jobs: "стажёр AppSec / пентеста, PT Start, первые багбаунти" },
+  { title: "Инфраструктурщик", icon: "🏰", xp: 3500, reward: "Хорошая мышь / наушники",
+    skills: "Атаки на Windows и AD, повышение привилегий, отчёты", jobs: "junior-пентестер, младший инженер по уязвимостям" },
+  { title: "Боец",             icon: "⚔️", xp: 6000, reward: "Сертификат + поход куда-нибудь с друзьями",
+    skills: "Портфолио write-up'ов, сертификат или принятый баг, CTF-команда", jobs: "junior / junior+ пентестер" },
+  { title: "Оффер",            icon: "👑", xp: null, reward: "Большая цель, которую Арсен выбирает сам",
+    skills: "Всё выше + резюме, отклики, собесы", jobs: "ты в профессии" },
 ];
 
-/* --- 7. БОССЫ. BOSSES[N] — чек-лист уровня N. Закрыл его → открывается уровень N+1. --- */
+/* --- 7. БОССЫ = ЭКЗАМЕНЫ НА ЗВАНИЕ. BOSSES[N] — что нужно доказать, чтобы получить звание N.
+   BOSSES[0] — подготовка, нужна вместе с экзаменом на «Сетевика». --- */
 const BOSSES = [
   [ "Kali Linux запускается в виртуалке",
     "Пройдены первые 5 уровней OverTheWire Bandit" ],
@@ -239,8 +248,8 @@ const BOSSES = [
     "Объяснил Kerberoasting «как десятилетнему»" ],
   [ "Сертификат получен ИЛИ принят баг в багбаунти",
     "30 машин с write-up'ами",
-    "Три CTF в команде",
-    "🎉 ОФФЕР ПОДПИСАН" ],
+    "Три CTF в команде" ],
+  [ "🎉 ОФФЕР ПОДПИСАН" ],
 ];
 
 /* --- 7.5. ССЫЛКИ — вкладка «Ссылки». Формат: ["Название", "адрес", "подсказка"] --- */
@@ -346,171 +355,199 @@ const PROGRESS_MEMES = {
 </script>
 
 <style>
-  /* ===== ЦВЕТА: чёрный, белый, кровавый красный ===== */
+  /* ===== СТИЛЬ: BBS/ASCII + швейцарская типографика. Чёрный, белый, кровавый красный. ===== */
   :root {
     --bg: #000;
     --panel: #000;
     --panel-2: #0a0a0a;
-    --border: #262626;
-    --border-strong: #3d3d3d;
+    --border: #2a2a2a;
+    --border-strong: #4a4a4a;
     --accent: #b5121b;                 /* кровавый красный — фон, рамки, полоски */
-    --accent-text: #e5383b;            /* красный для текста — светлее, чтобы читался на чёрном */
+    --accent-text: #e5383b;            /* красный для текста — светлее, чтобы читался */
     --accent-dim: #4d080c;
     --on-accent: #fff;
     --text: #e8e8e8;
     --muted: #8c8c8c;
-    --cyan: #ffffff;                   /* второстепенный цвет = белый */
-    --gold: #ffffff;                   /* награды и заметки = белый */
+    --cyan: #ffffff;
+    --gold: #ffffff;
     --mono: "JetBrains Mono", "Cascadia Code", Consolas, "Courier New", monospace;
     --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --display: "Inter Tight", "Inter", "Arial Narrow", sans-serif;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   ::selection { background: var(--accent); color: var(--on-accent); }
-  body { background: var(--bg); color: var(--text); font: 15px/1.55 var(--sans); min-height: 100vh; }
+  body { background: var(--bg); color: var(--text); font: 13px/1.6 var(--mono); min-height: 100vh; }
+  /* лёгкое зерно, как на плёнке (без затемнения краёв) */
+  body::after {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 400; opacity: .07;
+    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
   h1, h2, h3, .mono { font-family: var(--mono); }
   a, code { color: var(--text); }
 
-  /* эмодзи делаем монохромными — меньше мультяшности */
-  .xp-btn .ic, .stat .label, .log-item .ic, .boss-head h3, .boss-head .to, .modal .big-icon,
-  nav button:not(.active), .head-badge, .word-row > span:first-child, .coffee-debt .cups,
-  #streakHint, .level-sub, .dm-frame { filter: grayscale(1); }
+  /* эмодзи — монохромные */
+  .xp-btn .ic, .stat .label, .log-item .ic, .boss-head h3, .modal .big-icon, .head-badge,
+  .word-row > span:first-child, .coffee-debt .cups, #streakHint, .level-sub, .locked-lore h3 { filter: grayscale(1); }
 
-  /* заголовки блоков: маленький моно-текст с красным слешем */
-  h2 { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin: 0 0 14px; }
-  h2::before { content: "/ "; color: var(--accent-text); }
+  /* заголовки блоков: [/> НАЗВАНИЕ ──────── */
+  h2 {
+    display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 400;
+    text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin: 0 0 16px;
+  }
+  h2::before { content: "[/>"; color: var(--accent-text); letter-spacing: 0; }
+  h2::after { content: ""; flex: 1; border-top: 1px dashed var(--border-strong); min-width: 16px; }
+  .row > h2 { flex: 1; margin: 0; }
 
-  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px 48px; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 16px 56px; }
 
-  /* ===== ШАПКА ===== */
-  header { padding: 28px 0 16px; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-  .logo { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .glitch { margin: 0; font-size: 1.35rem; font-weight: 700; color: var(--text); letter-spacing: -.5px; }
+  /* ===== ШАПКА: ASCII-логотип ===== */
+  header { padding: 28px 0 18px; display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: end; }
+  .ascii-logo {
+    margin: 0; font-family: var(--mono); line-height: 1.05; color: var(--text);
+    font-size: clamp(6.5px, 1.9vw, 12px); letter-spacing: 0; white-space: pre; user-select: none;
+  }
+  .head-meta { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; text-align: right; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+  .glitch { color: var(--text); }
   .glitch .cursor { color: var(--accent-text); animation: blink 1.1s steps(1) infinite; }
   @keyframes blink { 50% { opacity: 0; } }
-  .tagline { font-family: var(--mono); font-size: .72rem; color: var(--muted); letter-spacing: 1px; }
-  .tagline::before { content: "// "; }
-  .head-badge { font-family: var(--mono); font-size: .78rem; color: var(--muted); white-space: nowrap; }
-  @media (max-width: 480px) { .glitch { font-size: 1.1rem; } }
+  .tagline, .kbd-hint { color: var(--muted); }
+  .head-badge { color: var(--text); }
+  @media (max-width: 640px) {
+    header { grid-template-columns: 1fr; gap: 12px; }
+    .head-meta { align-items: flex-start; text-align: left; }
+    .kbd-hint { display: none; }
+  }
 
-  /* ===== ВКЛАДКИ ===== */
+  /* ===== ВКЛАДКИ: [01] ГЛАВНАЯ ===== */
   nav {
     position: sticky; top: 0; z-index: 20; background: var(--bg);
-    border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-    display: flex; gap: 0; overflow-x: auto; margin-bottom: 24px; scrollbar-width: none;
+    border-top: 1px solid var(--text); border-bottom: 1px solid var(--border);
+    display: flex; overflow-x: auto; scrollbar-width: none;
   }
   nav::-webkit-scrollbar { display: none; }
   nav button {
-    flex: 0 0 auto; font-family: var(--mono); font-size: .75rem; text-transform: uppercase; letter-spacing: 1px;
-    background: none; color: var(--muted); border: none; border-bottom: 2px solid transparent;
-    padding: 12px 14px 10px; cursor: pointer;
+    flex: 0 0 auto; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+    background: none; color: var(--muted); border: none; padding: 12px 14px 11px; cursor: pointer;
   }
+  nav button i { font-style: normal; margin-right: 6px; color: var(--border-strong); }
   nav button:hover { color: var(--text); }
-  nav button.active { color: var(--text); border-bottom-color: var(--accent); }
+  nav button.active { color: var(--bg); background: var(--text); }
+  nav button.active i { color: var(--accent); }
+
+  /* ===== ОГРОМНЫЙ ЗАГОЛОВОК СТРАНИЦЫ ===== */
+  .page-title {
+    font-family: var(--display); font-weight: 800; text-transform: uppercase;
+    font-size: clamp(48px, 13vw, 128px); line-height: .85; letter-spacing: -.045em;
+    color: var(--text); margin: 28px 0 28px; word-break: break-word;
+  }
 
   .tab { display: none; }
   .tab.active { display: block; }
 
-  /* ===== КАРТОЧКИ И КНОПКИ ===== */
+  /* ===== КАРТОЧКИ ===== */
   .card { background: var(--panel); border: 1px solid var(--border); padding: 18px; margin-bottom: 16px; }
   .grid { display: grid; gap: 16px; }
   .grid-3 { grid-template-columns: repeat(3, 1fr); }
   @media (max-width: 640px) { .grid-3 { grid-template-columns: 1fr; } }
   .grid-mini { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  @media (max-width: 640px) { .grid-mini .card { padding: 10px; } .grid-mini .big { font-size: 1.4rem; } .grid-mini .label { font-size: .7rem; } }
+  @media (max-width: 640px) { .grid-mini .card { padding: 10px; } .grid-mini .big { font-size: 1.6rem; } .grid-mini .label { font-size: 9px; } }
 
+  /* кнопки: [ ТЕКСТ ] */
   .btn {
-    font: inherit; font-family: var(--mono); font-size: .78rem; cursor: pointer;
-    background: none; color: var(--text); border: 1px solid var(--border-strong); padding: 8px 14px;
-    transition: border-color .15s, background .15s, color .15s;
+    font: inherit; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+    background: none; color: var(--text); border: 1px solid var(--border-strong); padding: 8px 12px;
+    transition: background .1s, color .1s, border-color .1s;
   }
-  .btn:hover { border-color: var(--text); }
+  .btn::before { content: "[ "; color: var(--muted); }
+  .btn::after { content: " ]"; color: var(--muted); }
+  .btn:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .btn:hover::before, .btn:hover::after { color: var(--bg); }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-  .btn.primary:hover { background: #d0151f; border-color: #d0151f; }
+  .btn.primary::before, .btn.primary::after { color: rgba(255,255,255,.6); }
+  .btn.primary:hover { background: var(--text); border-color: var(--text); color: var(--bg); }
   .btn.ghost { border-color: transparent; color: var(--muted); padding-left: 0; }
-  .btn.ghost:hover { color: var(--text); }
-  .btn.small { padding: 5px 10px; font-size: .72rem; }
+  .btn.small { padding: 5px 9px; font-size: 10px; }
   .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn:disabled:hover { background: none; color: var(--text); border-color: var(--border-strong); }
   .muted { color: var(--muted); }
   .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 
-  /* ===== УРОВЕНЬ ===== */
-  .level-card { display: flex; gap: 18px; align-items: center; }
+  /* ===== УРОВЕНЬ: двойная рамка, как в BBS ===== */
+  .level-card { display: flex; gap: 20px; align-items: flex-start; border: 3px double var(--border-strong); }
   .level-badge {
-    flex: 0 0 auto; width: 76px; height: 76px; position: relative;
-    display: grid; place-items: center; border: 1px solid var(--text); box-shadow: inset 0 -4px 0 var(--accent);
+    flex: 0 0 auto; width: 84px; height: 84px; position: relative;
+    display: grid; place-items: center; border: 1px solid var(--text); box-shadow: inset 0 -5px 0 var(--accent);
   }
-  #lvlIcon { position: absolute; top: 4px; left: 6px; font-size: .85rem; filter: grayscale(1); }
-  .level-badge .lvl-num { font-family: var(--mono); font-size: 2.3rem; font-weight: 700; color: var(--text); line-height: 1; }
+  #lvlIcon { position: absolute; top: 4px; left: 6px; font-size: 13px; filter: grayscale(1); }
+  .level-badge .lvl-num { font-family: var(--display); font-size: 52px; font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -.04em; }
   .level-info { flex: 1; min-width: 0; }
-  .level-title { font-family: var(--mono); font-size: 1.15rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text); margin: 0; }
-  .level-sub { color: var(--muted); font-size: .88rem; margin-bottom: 12px; }
+  .level-title {
+    font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: -.03em;
+    font-size: clamp(26px, 5.5vw, 44px); line-height: .95; color: var(--text); margin: 0 0 8px;
+  }
+  .level-sub { color: var(--muted); margin-bottom: 14px; }
+  .lvl-skills { margin-top: 14px; border-top: 1px dashed var(--border-strong); padding-top: 10px; display: grid; gap: 4px; }
+  .lvl-skills span { display: inline-block; width: 82px; color: var(--accent-text); text-transform: uppercase; font-size: 10px; letter-spacing: 1px; }
+  @media (max-width: 520px) { .level-card { flex-direction: column; } .lvl-skills span { display: block; width: auto; } }
 
-  .bar { height: 6px; background: #1a1a1a; overflow: hidden; }
-  .bar > div { height: 100%; width: 0; background: var(--accent); transition: width .9s cubic-bezier(.2,.8,.2,1); }
-  .bar.gold > div { background: var(--text); }
-  .bar-text { display: flex; justify-content: space-between; font-family: var(--mono); font-size: .75rem; color: var(--muted); margin-top: 8px; gap: 8px; }
+  /* полоска как ASCII: сегменты-блоки */
+  .bar { height: 10px; background: repeating-linear-gradient(90deg, #1c1c1c 0 6px, transparent 6px 8px); overflow: hidden; }
+  .bar > div {
+    height: 100%; width: 0;
+    background: repeating-linear-gradient(90deg, var(--accent) 0 6px, transparent 6px 8px);
+    transition: width .9s cubic-bezier(.2,.8,.2,1);
+  }
+  .bar.gold > div { background: repeating-linear-gradient(90deg, var(--text) 0 6px, transparent 6px 8px); }
+  .bar-text { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-top: 8px; gap: 8px; text-transform: uppercase; letter-spacing: 1px; }
 
-  /* ===== СТАТИСТИКА ===== */
-  .stat .big { font-family: var(--mono); font-size: 1.9rem; font-weight: 700; color: var(--text); line-height: 1.15; margin: 4px 0; }
+  /* ===== СТАТИСТИКА: крупные цифры ===== */
+  .stat .big { font-family: var(--display); font-size: 48px; font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -.04em; margin: 8px 0 6px; }
   .grid-3 .card:first-child .big { color: var(--accent-text); }
-  .stat .label { color: var(--muted); font-size: .72rem; text-transform: uppercase; letter-spacing: 1px; font-family: var(--mono); }
-  .stat .hint { font-size: .8rem; margin-top: 4px; }
+  .stat .label { color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; }
+  .stat .hint { font-size: 11px; margin-top: 4px; }
 
-  /* ===== ДЕМОТИВАТОР ПО ПРОГРЕССУ ===== */
+  /* ===== ДЕМОТИВАТОР ===== */
   .demotivator { max-width: 420px; margin: 0 auto; padding: 18px 18px 16px; background: #000; text-align: center; }
   .dm-frame {
     border: 2px solid #fff; padding: 3px; aspect-ratio: 4 / 3; display: grid; place-items: center;
-    font-size: 4.5rem; background: #0a0a0a; overflow: hidden;
+    font-size: 4.5rem; background: #0a0a0a; overflow: hidden; filter: grayscale(1) contrast(1.2);
   }
   .dm-frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
   .dm-frame.has-img { display: block; aspect-ratio: auto; height: 340px; }
-  .dm-title { font-family: "Times New Roman", Georgia, serif; font-size: 1.55rem; text-transform: uppercase; color: #fff; margin-top: 14px; letter-spacing: 1px; line-height: 1.15; }
+  .dm-title { font-family: "Times New Roman", Georgia, serif; font-size: 1.6rem; text-transform: uppercase; color: #fff; margin-top: 14px; letter-spacing: 1px; line-height: 1.15; }
   .dm-sub { font-family: "Times New Roman", Georgia, serif; font-size: 1rem; color: #d0d0d0; margin-top: 6px; }
   .dm-title b, .dm-sub b { color: var(--accent-text); font-weight: inherit; }
 
-  /* ===== ФРАЗА ДНЯ ===== */
-  .quote { font-size: 1.05rem; margin: 0; padding-left: 14px; border-left: 2px solid var(--accent); }
+  /* ===== ФРАЗА ДНЯ: крупно, гротеском ===== */
+  .quote {
+    font-family: var(--display); font-weight: 600; font-size: clamp(20px, 3.2vw, 28px); line-height: 1.15;
+    letter-spacing: -.02em; margin: 0; text-transform: none;
+  }
+  .quote::before { content: "“"; color: var(--accent-text); }
+  .quote::after { content: "”"; color: var(--accent-text); }
 
   /* ===== КНОПКИ XP ===== */
   .xp-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
   .xp-btn {
     font: inherit; cursor: pointer; text-align: left; background: var(--bg); color: var(--text); border: none;
-    padding: 12px; display: flex; flex-direction: column; gap: 3px; position: relative; transition: background .12s;
+    padding: 12px; display: flex; flex-direction: column; gap: 3px; position: relative; transition: background .1s, color .1s;
   }
-  .xp-btn:hover { background: #111; }
-  .xp-btn:hover .xp { color: var(--accent-text); }
-  .xp-btn:active { background: var(--accent-dim); }
-  .xp-btn .ic { font-size: 1.1rem; }
-  .xp-btn .lb { font-size: .84rem; line-height: 1.25; }
-  .xp-btn .xp { font-family: var(--mono); font-size: .72rem; color: var(--muted); }
-  .xp-btn .go { color: var(--muted); opacity: .7; }
+  .xp-btn:hover { background: var(--text); color: var(--bg); }
+  .xp-btn:hover .xp, .xp-btn:hover .go { color: var(--accent); }
+  .xp-btn:active { background: var(--accent); color: var(--on-accent); }
+  .xp-btn .ic { font-size: 15px; }
+  .xp-btn .lb { font-size: 12px; line-height: 1.3; }
+  .xp-btn .xp { font-size: 10px; color: var(--muted); letter-spacing: .5px; }
+  .xp-btn .go { color: var(--muted); opacity: .8; }
   .xp-cell { position: relative; background: var(--bg); display: flex; }
   .xp-cell .xp-btn { flex: 1; }
   .xp-quick {
-    position: absolute; top: 6px; right: 6px; width: 26px; height: 26px; line-height: 1;
-    font-family: var(--mono); font-size: 1rem; background: none; color: var(--muted);
-    border: 1px solid var(--border-strong); cursor: pointer;
+    position: absolute; top: 6px; right: 6px; width: 24px; height: 24px; line-height: 1;
+    font-family: var(--mono); font-size: 14px; background: var(--bg); color: var(--muted);
+    border: 1px solid var(--border-strong); cursor: pointer; z-index: 1;
   }
   .xp-quick:hover { color: var(--on-accent); background: var(--accent); border-color: var(--accent); }
-
-  /* ===== ПЛАШКА «СДЕЛАЛ?» ===== */
-  .pending { display: none; border: 1px solid var(--accent); padding: 14px; margin-bottom: 16px; gap: 10px; flex-direction: column; }
-  .pending.show { display: flex; }
-  .pending-text b { color: var(--text); }
-  .pending .input { width: 100%; }
-
-  /* ===== ССЫЛКИ ===== */
-  .link-row {
-    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 0;
-    border-bottom: 1px solid var(--border); text-decoration: none; color: var(--text);
-  }
-  .link-row:last-child { border-bottom: none; }
-  .link-row:hover .link-title { color: var(--accent-text); }
-  .link-title { font-weight: 500; }
-  .link-hint { grid-column: 1; font-size: .8rem; color: var(--muted); }
-  .link-host { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-family: var(--mono); font-size: .72rem; color: var(--muted); white-space: nowrap; }
-  @media (max-width: 480px) { .link-host { display: none; } }
 
   .float-xp {
     position: fixed; z-index: 100; pointer-events: none;
@@ -519,11 +556,17 @@ const PROGRESS_MEMES = {
   }
   @keyframes floatUp { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-50px); } }
 
+  /* ===== ПЛАШКА «СДЕЛАЛ?» ===== */
+  .pending { display: none; border: 3px double var(--accent); padding: 14px; margin-bottom: 16px; gap: 10px; flex-direction: column; }
+  .pending.show { display: flex; }
+  .pending-text b { color: var(--text); }
+  .pending .input { width: 100%; }
+
   /* ===== УВЕДОМЛЕНИЕ ===== */
   #toast {
     position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(120px);
-    background: #000; border: 1px solid var(--text); color: var(--text); font-family: var(--mono);
-    padding: 10px 16px; z-index: 200; max-width: calc(100% - 32px); transition: transform .25s ease; font-size: .8rem;
+    background: var(--text); color: var(--bg); font-family: var(--mono); text-transform: uppercase; letter-spacing: .5px;
+    padding: 10px 16px; z-index: 200; max-width: calc(100% - 32px); transition: transform .2s ease; font-size: 11px;
   }
   #toast.show { transform: translateX(-50%) translateY(0); }
 
@@ -532,91 +575,112 @@ const PROGRESS_MEMES = {
   input[type=file] { display: none; }
 
   /* ===== ПОЛЯ ВВОДА ===== */
-  .input { font: inherit; font-size: .88rem; color: var(--text); background: #000; border: 1px solid var(--border-strong); padding: 8px 12px; max-width: 100%; }
+  .input { font: inherit; font-size: 12px; color: var(--text); background: #000; border: 1px solid var(--border-strong); padding: 8px 12px; max-width: 100%; }
   .input:focus { outline: none; border-color: var(--text); }
+  .input::placeholder { color: #666; }
 
   /* ===== ЖУРНАЛ ===== */
-  .log-day { font-family: var(--mono); font-size: .72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 18px 0 6px; }
+  .log-day { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); margin: 20px 0 6px; }
+  .log-day::before { content: "■ "; color: var(--accent-text); }
   .log-day:first-child { margin-top: 0; }
-  .log-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid var(--border); }
-  .log-item .ic { font-size: 1.05rem; }
+  .log-item { display: flex; gap: 10px; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--border); }
+  .log-item .ic { font-size: 14px; }
   .log-item .body { flex: 1; min-width: 0; }
-  .log-item .ttl { font-size: .9rem; }
-  .log-item .meta { font-size: .72rem; color: var(--muted); font-family: var(--mono); }
-  .log-item .note { font-size: .84rem; color: var(--text); margin-top: 2px; word-break: break-word; border-left: 2px solid var(--accent); padding-left: 8px; }
-  .log-item .xp { font-family: var(--mono); color: var(--accent-text); font-size: .8rem; white-space: nowrap; }
+  .log-item .ttl { font-size: 13px; }
+  .log-item .meta { font-size: 10px; color: var(--muted); }
+  .log-item .note { font-size: 12px; color: var(--text); margin-top: 2px; word-break: break-word; }
+  .log-item .note::before { content: "↳ "; color: var(--accent-text); }
+  .log-item .xp { color: var(--accent-text); font-size: 12px; white-space: nowrap; }
   .log-item .acts { display: flex; gap: 2px; }
-  .icon-btn { background: none; border: none; cursor: pointer; font-size: .95rem; padding: 2px 4px; opacity: .5; filter: grayscale(1); }
+  .icon-btn { background: none; border: none; cursor: pointer; font-size: 13px; padding: 2px 4px; opacity: .5; filter: grayscale(1); }
   .icon-btn:hover { opacity: 1; }
 
-  /* ===== БОССЫ ===== */
+  /* ===== ЭКЗАМЕНЫ (БОССЫ) ===== */
   .boss { position: relative; }
-  .boss.current { border-color: var(--accent); }
-  .boss.locked { opacity: .45; }
-  .boss-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; margin-bottom: 10px; }
-  .boss-head h3 { margin: 0; font-size: .95rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text); }
-  .boss-head .to { font-size: .8rem; color: var(--muted); margin-top: 2px; }
-  .tag { font-family: var(--mono); font-size: .68rem; text-transform: uppercase; letter-spacing: 1px; padding: 2px 8px; border: 1px solid var(--border-strong); white-space: nowrap; color: var(--muted); }
-  .tag.ok { color: var(--text); border-color: var(--text); }
+  .boss.current { border: 3px double var(--accent); }
+  .boss.locked { opacity: .4; }
+  .boss-head { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
+  .boss-head h3 { margin: 0 0 4px; font-family: var(--display); font-size: 22px; font-weight: 800; text-transform: uppercase; letter-spacing: -.02em; color: var(--text); line-height: 1; }
+  .boss-head .to { font-size: 11px; color: var(--muted); margin-top: 3px; }
+  .boss-head > div { min-width: 0; }
+  .boss-head h3, .lore h3, .level-title { overflow-wrap: anywhere; }
+  @media (max-width: 480px) { .boss-head h3 { font-size: 18px; } }
+  .tag { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; padding: 2px 8px; border: 1px solid var(--border-strong); white-space: nowrap; color: var(--muted); }
+  .tag.ok { color: var(--bg); background: var(--text); border-color: var(--text); }
   .tag.cur { color: var(--on-accent); background: var(--accent); border-color: var(--accent); }
-  .check { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; cursor: pointer; font-size: .9rem; }
-  .check input { width: 16px; height: 16px; accent-color: var(--accent); margin-top: 3px; flex: 0 0 auto; cursor: pointer; }
-  .check.done span { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--accent); }
-  .boss-xp { font-family: var(--mono); font-size: .75rem; margin-top: 8px; }
+  .check { display: flex; gap: 10px; align-items: flex-start; padding: 7px 0; cursor: pointer; font-size: 13px; }
+  .check input { width: 15px; height: 15px; accent-color: var(--accent); margin-top: 3px; flex: 0 0 auto; cursor: pointer; }
+  .check.done > span { color: var(--muted); text-decoration: line-through; text-decoration-color: var(--accent); }
+  .proof { display: block; font-style: normal; color: var(--text); font-size: 11px; text-decoration: none; margin-top: 2px; word-break: break-word; }
+  .check.done .proof { text-decoration: none; display: inline-block; }
+  .boss-xp { font-size: 11px; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
 
   /* ===== ОКНА ===== */
   #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 300; }
-  .modal-bg { position: fixed; inset: 0; z-index: 250; background: rgba(0,0,0,.88); display: none; align-items: center; justify-content: center; padding: 16px; }
+  .modal-bg { position: fixed; inset: 0; z-index: 250; background: rgba(0,0,0,.9); display: none; align-items: center; justify-content: center; padding: 16px; }
   .modal-bg.show { display: flex; }
-  .modal { background: #000; border: 1px solid var(--text); box-shadow: inset 0 -4px 0 var(--accent); padding: 28px 24px; max-width: 420px; width: 100%; text-align: center; }
-  .modal .big-icon { font-size: 3rem; line-height: 1; }
-  .modal h3 { font-family: var(--mono); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text); font-size: 1.2rem; margin: 10px 0 6px; }
-  .modal .reward { border: 1px solid var(--border-strong); border-left: 2px solid var(--accent); color: var(--text); padding: 10px; margin: 16px 0; text-align: left; }
-  .modal.wide { max-width: 640px; text-align: left; box-shadow: none; }
+  .modal { background: #000; border: 3px double var(--text); padding: 28px 24px; max-width: 440px; width: 100%; text-align: center; }
+  .modal .big-icon { font-size: 2.6rem; line-height: 1; }
+  .modal h3 { font-family: var(--display); font-weight: 800; text-transform: uppercase; letter-spacing: -.03em; color: var(--text); font-size: 34px; line-height: .95; margin: 12px 0 10px; }
+  .modal .reward { border: 1px dashed var(--border-strong); border-left: 3px solid var(--accent); color: var(--text); padding: 10px; margin: 16px 0; text-align: left; }
+  .modal.wide { max-width: 640px; text-align: left; }
   .modal img { max-width: 100%; max-height: 75vh; display: block; margin: 0 auto; }
-  textarea.input { width: 100%; min-height: 260px; font-family: var(--mono); font-size: .8rem; resize: vertical; }
+  textarea.input { width: 100%; min-height: 260px; font-family: var(--mono); font-size: 12px; resize: vertical; }
 
   /* ===== АНГЛИЙСКИЕ КАРТОЧКИ ===== */
   .flash {
-    min-height: 150px; border: 1px solid var(--border-strong); cursor: pointer; user-select: none;
+    min-height: 160px; border: 3px double var(--border-strong); cursor: pointer; user-select: none;
     display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; background: #000;
   }
   .flash:hover { border-color: var(--text); }
   .flash.flipped { border-color: var(--accent); }
   .flash.flip-anim { animation: flip .25s ease; }
   @keyframes flip { 50% { transform: rotateX(90deg); } }
-  .flash-word { font-family: var(--mono); font-size: 1.4rem; font-weight: 700; color: var(--text); word-break: break-word; }
-  .flash.flipped .flash-word { font-family: var(--sans); font-weight: 500; font-size: 1.2rem; }
-  .flash-hint { font-size: .72rem; color: var(--muted); margin-top: 8px; font-family: var(--mono); }
-  .word-row { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: .86rem; }
-  .word-row .en { font-family: var(--mono); color: var(--text); flex: 1; min-width: 0; }
+  .flash-word { font-family: var(--display); font-size: clamp(26px, 5vw, 40px); font-weight: 800; letter-spacing: -.03em; color: var(--text); word-break: break-word; line-height: 1; }
+  .flash.flipped .flash-word { font-weight: 600; font-size: clamp(20px, 4vw, 28px); }
+  .flash-hint { font-size: 10px; color: var(--muted); margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .word-row { display: flex; gap: 8px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--border); font-size: 12px; }
+  .word-row .en { color: var(--text); flex: 1; min-width: 0; }
   .word-row .ru { flex: 1.3; min-width: 0; color: var(--muted); }
 
   /* ===== ЛОР ===== */
-  .lore h3 { margin: 0 0 8px; font-size: .95rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--text); }
-  .lore h3::before { content: "> "; color: var(--accent-text); }
-  .lore p { margin: 0; white-space: pre-line; color: #cfcfcf; }
+  .lore h3 { margin: 0 0 8px; font-family: var(--display); font-size: 22px; font-weight: 800; text-transform: uppercase; letter-spacing: -.02em; color: var(--text); line-height: 1.05; }
+  .lore p { margin: 0; white-space: pre-line; color: #cfcfcf; font-family: var(--sans); font-size: 14px; line-height: 1.6; }
   .locked-lore { border-style: dashed; }
-  .locked-lore h3 { color: var(--muted); letter-spacing: 0; filter: grayscale(1); }
-  .locked-lore h3::before { content: ""; }
+  .locked-lore h3 { color: var(--muted); letter-spacing: 0; font-family: var(--mono); font-size: 14px; }
   .locked-lore b { color: var(--text); font-weight: 600; }
+  .locked-lore p { font-family: var(--mono); font-size: 12px; }
+
+  /* ===== ССЫЛКИ ===== */
+  .link-row {
+    display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; padding: 10px 0;
+    border-bottom: 1px dashed var(--border); text-decoration: none; color: var(--text);
+  }
+  .link-row:last-child { border-bottom: none; }
+  .link-row:hover .link-title { color: var(--accent-text); }
+  .link-title { font-size: 13px; }
+  .link-title::before { content: "→ "; color: var(--accent-text); }
+  .link-hint { grid-column: 1; font-size: 11px; color: var(--muted); }
+  .link-host { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 10px; color: var(--muted); white-space: nowrap; text-transform: uppercase; }
+  @media (max-width: 480px) { .link-host { display: none; } }
 
   /* ===== МЕМЫ ===== */
   .meme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
   .meme { position: relative; border: 1px solid var(--border); background: #000; cursor: zoom-in; }
   .meme:hover { border-color: var(--text); }
-  .meme img { width: 100%; height: 200px; object-fit: contain; display: block; background: #0a0a0a; }
+  .meme img { width: 100%; height: 200px; object-fit: contain; display: block; background: #0a0a0a; filter: grayscale(1) contrast(1.15); transition: filter .2s; }
+  .meme:hover img { filter: none; }
   .meme .del { position: absolute; top: 4px; right: 4px; background: #000; }
-  .meme .broken { height: 160px; display: grid; place-items: center; font-size: .75rem; color: var(--muted); padding: 8px; text-align: center; }
-  #memeOfDay img { max-width: 100%; max-height: 360px; display: block; margin: 0 auto; cursor: zoom-in; border: 1px solid var(--border-strong); }
+  .meme .broken { height: 200px; display: grid; place-items: center; font-size: 11px; color: var(--muted); padding: 8px; text-align: center; }
+  #memeOfDay img { max-width: 100%; max-height: 360px; display: block; margin: 0 auto; cursor: zoom-in; filter: grayscale(1) contrast(1.15); }
 
   /* ===== КОФЕ-ДОЛГ ===== */
-  .coffee-debt { font-size: 1rem; margin-top: 4px; }
-  .coffee-debt b { color: var(--accent-text); font-family: var(--mono); }
+  .coffee-debt { font-size: 14px; margin-top: 4px; }
+  .coffee-debt b { color: var(--accent-text); }
   .coffee-debt .cups { letter-spacing: 2px; }
-  .coffee-warn { color: var(--accent-text); font-size: .84rem; margin-top: 8px; }
+  .coffee-warn { color: var(--accent-text); font-size: 12px; margin-top: 8px; }
   .coffee-warn:empty { display: none; }
-  .card.danger { border-color: var(--accent); }
+  .card.danger { border: 3px double var(--accent); }
 
   @media (prefers-reduced-motion: reduce) {
     .glitch .cursor, .float-xp, .flash.flip-anim { animation: none; }
@@ -628,22 +692,31 @@ const PROGRESS_MEMES = {
 <div class="wrap">
 
   <header>
-    <div class="logo">
-      <h1 class="glitch" data-text="arsen@pentest:~$">arsen@pentest:~$<span class="cursor">_</span></h1>
+<pre class="ascii-logo" aria-label="ARSEN"> █████╗ ██████╗ ███████╗███████╗███╗   ██╗
+██╔══██╗██╔══██╗██╔════╝██╔════╝████╗  ██║
+███████║██████╔╝███████╗█████╗  ██╔██╗ ██║
+██╔══██║██╔══██╗╚════██║██╔══╝  ██║╚██╗██║
+██║  ██║██║  ██║███████║███████╗██║ ╚████║
+╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═══╝</pre>
+    <div class="head-meta">
+      <span class="glitch">/ pentest progress tracker<span class="cursor">_</span></span>
       <span class="tagline">hack your laziness</span>
+      <span class="head-badge" id="headBadge"></span>
+      <span class="kbd-hint">/ клавиши 1–7 — навигация</span>
     </div>
-    <div class="head-badge" id="headBadge"></div>
   </header>
 
   <nav id="nav">
-    <button data-tab="home" class="active">🏠 Главная</button>
-    <button data-tab="bosses">👹 Боссы</button>
-    <button data-tab="log">📜 Журнал</button>
-    <button data-tab="english">🗣️ Английский</button>
-    <button data-tab="lore">📖 Лор</button>
-    <button data-tab="memes">🖼️ Мемы</button>
-    <button data-tab="links">🔗 Ссылки</button>
+    <button data-tab="home" class="active" data-title="Прогресс."><i>01</i>Главная</button>
+    <button data-tab="bosses" data-title="Экзамены."><i>02</i>Боссы</button>
+    <button data-tab="log" data-title="Журнал."><i>03</i>Журнал</button>
+    <button data-tab="english" data-title="English."><i>04</i>Английский</button>
+    <button data-tab="lore" data-title="Лор."><i>05</i>Лор</button>
+    <button data-tab="memes" data-title="Мемы."><i>06</i>Мемы</button>
+    <button data-tab="links" data-title="Ссылки."><i>07</i>Ссылки</button>
   </nav>
+
+  <div class="page-title" id="pageTitle">Прогресс.</div>
 
   <!-- ================= ГЛАВНАЯ ================= -->
   <!-- Плашка «ушёл решать — сделал?» (видна на всех вкладках) -->
@@ -658,6 +731,7 @@ const PROGRESS_MEMES = {
         <div class="level-sub" id="lvlSub"></div>
         <div class="bar" id="xpBarWrap"><div id="xpBar"></div></div>
         <div class="bar-text"><span id="xpText"></span><span id="xpNext"></span></div>
+        <div class="lvl-skills" id="lvlSkills"></div>
       </div>
     </div>
 
@@ -673,7 +747,7 @@ const PROGRESS_MEMES = {
         <div class="hint muted" id="weekXp"></div>
       </div>
       <div class="card stat">
-        <div class="label">💰 Счётчик денег</div>
+        <div class="label">💰 Получаешь сейчас</div>
         <div class="big" id="moneyNow">40к</div>
         <div class="hint muted" id="moneyGoal"></div>
         <div class="bar gold" style="height:8px;margin-top:8px"><div id="moneyBar"></div></div>
@@ -733,9 +807,9 @@ const PROGRESS_MEMES = {
   <!-- ================= БОССЫ ================= -->
   <section class="tab" id="tab-bosses">
     <div class="card">
-      <h2>боссы_уровней</h2>
+      <h2>экзамены_на_звание</h2>
       <p class="muted" style="margin:0;font-size:.9rem">
-        Новый уровень = нужный XP <b>и</b> побеждённый босс текущего уровня. Отмечай пункт, только когда реально сделал — без читов, бро 😏
+        Звание = нужный XP <b>и</b> сданный экзамен ЭТОГО звания. Так «Сетевик» значит, что ты реально умеешь в сети, а не просто кликал кнопки. Отмечая пункт, впиши доказательство — ссылку на write-up, профиль или кто проверил.
       </p>
     </div>
     <div id="bossList"></div>
@@ -898,6 +972,7 @@ function defaultState() {
     money: { now: MONEY_START, goal: MONEY_GOAL },
     coffeePaid: 0,    // сколько кофе уже поставлено Серёже
     pending: null,    // «ушёл решать» — ждёт подтверждения XP
+    bossProof: {},    // доказательства к пунктам экзаменов
     customLore: [],   // истории, которые Арсен добавил сам
     loreUnlocked: null, // сколько историй из LORE уже открыто (чтобы показать «открыт новый лор»)
   };
@@ -947,13 +1022,19 @@ function bossDone(level) {
   return BOSSES[level].every((_, i) => state.bosses[level + "-" + i]);
 }
 
-// Уровень = самый высокий, для которого набран XP и закрыт босс предыдущего уровня
+// Экзамен на звание k сдан: закрыт чек-лист этого звания (для «Сетевика» — ещё и подготовка)
+function examDone(k) {
+  return bossDone(k) && (k > 1 || bossDone(0));
+}
+
+// Звание = самое высокое, для которого набран XP И сдан экзамен ЭТОГО звания.
+// Так звание всегда подтверждено реальными навыками, а не выдано авансом.
 function calcLevel() {
   const xp = totalXP();
   let lvl = 0;
   for (let k = 1; k < LEVELS.length; k++) {
     const xpOk = LEVELS[k].xp === null || xp >= LEVELS[k].xp;
-    if (xpOk && bossDone(k - 1)) lvl = k; else break;
+    if (xpOk && examDone(k)) lvl = k; else break;
   }
   return lvl;
 }
@@ -1045,8 +1126,8 @@ function renderHome() {
       pct = Math.min(100, (xp - L.xp) / (next.xp - L.xp) * 100);
       left = xp + " / " + next.xp + " XP";
       if (xp >= next.xp) {
-        sub = "XP набран! Добей босса уровня, чтобы стать «" + next.title + "» 👹";
-        right = "нужен босс";
+        sub = "XP набран! Сдай экзамен на «" + next.title + "» во вкладке «Боссы» 👹";
+        right = "нужен экзамен";
       } else {
         sub = "До «" + next.title + "» " + next.icon + " осталось " + (next.xp - xp) + " XP";
         right = Math.floor(pct) + "%";
@@ -1060,6 +1141,9 @@ function renderHome() {
     right = "MAX";
   }
   $("lvlSub").textContent = sub;
+  $("lvlSkills").innerHTML =
+    '<div><span>умеешь</span>' + esc(L.skills || "") + '</div>' +
+    '<div><span>реально</span>' + esc(L.jobs || "") + '</div>';
   $("xpText").textContent = left;
   $("xpNext").textContent = right;
   setTimeout(() => { $("xpBar").style.width = pct + "%"; }, 30);
@@ -1076,7 +1160,7 @@ function renderHome() {
 
   // Деньги
   const m = state.money;
-  $("moneyNow").textContent = "сейчас " + m.now + "к";
+  $("moneyNow").textContent = m.now + "к";
   $("moneyGoal").textContent = "→ цель первого оффера " + m.goal + "к+";
   setTimeout(() => { $("moneyBar").style.width = Math.min(100, m.now / m.goal * 100) + "%"; }, 30);
 
@@ -1100,7 +1184,7 @@ function renderStatusMeme() {
   if (!state.log.length)                                   { key = "start"; }
   else if (c.debt > 0)                                     { key = "coffee"; n = c.debt; }
   else if (dow >= 4 && wx < COFFEE_MIN_XP)                 { key = "danger"; n = COFFEE_MIN_XP - wx; }
-  else if (next && next.xp !== null && xp >= next.xp && !bossDone(lvl)) { key = "boss"; }
+  else if (next && next.xp !== null && xp >= next.xp && !examDone(lvl + 1)) { key = "boss"; }
   else if (!s.today)                                       { key = "noStudy"; }
   else if (s.streak >= 7)                                  { key = "streak"; n = s.streak; }
 
@@ -1347,42 +1431,54 @@ function deleteEntry(id) {
 function renderBosses() {
   const xp = totalXP();
   const lvl = calcLevel();
+  const proofs = state.bossProof || {};
   let html = "";
   BOSSES.forEach((items, k) => {
-    const cur = LEVELS[k], next = LEVELS[k + 1];
-    const done = bossDone(k);
-    const passed = lvl > k;
-    const locked = k > lvl;
-    const tag = passed ? '<span class="tag ok">✅ пройден</span>'
-              : k === lvl ? '<span class="tag cur">⚔️ текущий</span>'
-              : '<span class="tag">🔒 впереди</span>';
-    const xpNeed = next.xp;
-    const xpLine = xpNeed === null
-      ? '<div class="boss-xp muted">XP не нужен — нужен подписанный оффер 👑</div>'
-      : '<div class="boss-xp" style="color:' + (xp >= xpNeed ? 'var(--accent)' : 'var(--muted)') + '">' +
-          (xp >= xpNeed ? '✅' : '⏳') + ' XP: ' + Math.min(xp, xpNeed) + ' / ' + xpNeed + '</div>';
+    const L = LEVELS[k];
+    const passed = k === 0 ? bossDone(0) : lvl >= k;
+    const current = !passed && k <= lvl + 1;
+    const locked = !passed && !current;
+    const tag = passed ? '<span class="tag ok">сдан</span>'
+              : current ? '<span class="tag cur">сейчас</span>'
+              : '<span class="tag">впереди</span>';
+    const head = k === 0
+      ? '<h3>' + L.icon + ' 00 · Подготовка</h3><div class="to">Нужна вместе с экзаменом на «' + LEVELS[1].title + '»</div>'
+      : '<h3>' + L.icon + ' ' + String(k).padStart(2, "0") + ' · Экзамен на «' + L.title + '»</h3>' +
+        '<div class="to">Умеешь: ' + esc(L.skills) + '</div>' +
+        '<div class="to">Реально: ' + esc(L.jobs) + (L.reward ? ' · 🎁 ' + esc(L.reward) : '') + '</div>';
+    const xpLine = k === 0 ? ''
+      : L.xp === null
+        ? '<div class="boss-xp muted">XP не нужен — нужен подписанный оффер</div>'
+        : '<div class="boss-xp" style="color:' + (xp >= L.xp ? 'var(--text)' : 'var(--muted)') + '">' +
+            (xp >= L.xp ? '■' : '□') + ' XP: ' + Math.min(xp, L.xp) + ' / ' + L.xp + '</div>';
     html +=
-      '<div class="card boss' + (k === lvl ? ' current' : '') + (locked ? ' locked' : '') + '">' +
-        '<div class="boss-head"><div>' +
-          '<h3>' + cur.icon + ' Ур. ' + k + ' · ' + cur.title + '</h3>' +
-          '<div class="to">Победа открывает → ' + next.icon + ' «' + next.title + '»' +
-            (next.reward ? ' · 🎁 ' + esc(next.reward) : '') + '</div>' +
-        '</div>' + tag + '</div>' +
+      '<div class="card boss' + (current ? ' current' : '') + (locked ? ' locked' : '') + '">' +
+        '<div class="boss-head"><div>' + head + '</div>' + tag + '</div>' +
         items.map((txt, i) => {
           const key = k + "-" + i, on = !!state.bosses[key];
           return '<label class="check' + (on ? ' done' : '') + '">' +
-                   '<input type="checkbox"' + (on ? ' checked' : '') + ' onchange="toggleBoss(\'' + key + '\', this.checked)">' +
-                   '<span>' + esc(txt) + '</span></label>';
+                   '<input type="checkbox"' + (on ? ' checked' : '') + ' onchange="toggleBoss(\'' + key + '\', this.checked, this)">' +
+                   '<span>' + esc(txt) + (on && proofs[key] ? '<em class="proof">↳ ' + esc(proofs[key]) + '</em>' : '') + '</span></label>';
         }).join("") +
         xpLine +
-        (done && !passed ? '<div class="boss-xp" style="color:var(--gold)">👹 Босс побеждён! Добивай XP.</div>' : '') +
+        (k > 0 && bossDone(k) && !passed && L.xp !== null && xp < L.xp ? '<div class="boss-xp" style="color:var(--accent-text)">Экзамен сдан — добивай XP</div>' : '') +
       '</div>';
   });
   $("bossList").innerHTML = html;
 }
 
-function toggleBoss(key, on) {
-  if (on) state.bosses[key] = true; else delete state.bosses[key];
+// Отметка пункта экзамена: просим доказательство, чтобы звание было честным
+function toggleBoss(key, on, el) {
+  state.bossProof = state.bossProof || {};
+  if (on) {
+    const proof = prompt("Чем докажешь? Ссылка на write-up / профиль / кто проверил.\n(можно пусто, но Серёжа спросит)", "");
+    if (proof === null) { if (el) el.checked = false; return; }   // передумал — не отмечаем
+    state.bosses[key] = true;
+    if (proof.trim()) state.bossProof[key] = proof.trim(); else delete state.bossProof[key];
+  } else {
+    delete state.bosses[key];
+    delete state.bossProof[key];
+  }
   afterChange();
 }
 
@@ -1399,7 +1495,7 @@ function checkLevelUp() {
     $("lmTitle").textContent = "Ур. " + lvl + " · " + L.title;
     $("lmText").textContent = lvl === LEVELS.length - 1
       ? "ОФФЕР ПОДПИСАН. Ты сделал это, бро. Легенда."
-      : "Босс повержен, XP набран. Ты официально «" + L.title + "»!";
+      : "Экзамен сдан, XP набран. Ты официально «" + L.title + "». Теперь реально: " + L.jobs + ".";
     $("lmReward").textContent = "🎁 Награда: " + L.reward;
     $("levelModal").classList.add("show");
     confetti();
@@ -1495,8 +1591,16 @@ document.querySelectorAll("#nav button").forEach(b => {
   b.addEventListener("click", () => {
     document.querySelectorAll("#nav button").forEach(x => x.classList.toggle("active", x === b));
     document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.id === "tab-" + b.dataset.tab));
+    $("pageTitle").textContent = b.dataset.title || "";
     window.scrollTo({ top: 0 });
   });
+});
+
+// Клавиши 1–7 переключают вкладки (если не печатаешь в поле ввода)
+document.addEventListener("keydown", e => {
+  if (e.ctrlKey || e.altKey || e.metaKey || /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+  const btn = document.querySelectorAll("#nav button")[parseInt(e.key, 10) - 1];
+  if (btn) btn.click();
 });
 
 /* =====================================================================
