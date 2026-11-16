@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400">
-  <rect width="600" height="400" fill="#050506"/>
-  <rect x="10" y="10" width="580" height="380" fill="none" stroke="#b3122d" stroke-width="3"/>
-  <rect x="18" y="18" width="564" height="364" fill="none" stroke="#5b9aa3" stroke-width="1" stroke-dasharray="6 6"/>
-  <text x="300" y="80" fill="#cbc6cf" font-family="Consolas, monospace" font-size="26" font-weight="bold" text-anchor="middle">Когда nmap нашёл</text>
-  <text x="300" y="115" fill="#cbc6cf" font-family="Consolas, monospace" font-size="26" font-weight="bold" text-anchor="middle">открытый 22-й порт:</text>
+  <rect width="600" height="400" fill="#000000"/>
+  <rect x="10" y="10" width="580" height="380" fill="none" stroke="#b5121b" stroke-width="3"/>
+  <rect x="18" y="18" width="564" height="364" fill="none" stroke="#555555" stroke-width="1" stroke-dasharray="6 6"/>
+  <text x="300" y="80" fill="#e8e8e8" font-family="Consolas, monospace" font-size="26" font-weight="bold" text-anchor="middle">Когда nmap нашёл</text>
+  <text x="300" y="115" fill="#e8e8e8" font-family="Consolas, monospace" font-size="26" font-weight="bold" text-anchor="middle">открытый 22-й порт:</text>
   <text x="300" y="235" font-size="110" text-anchor="middle">😏</text>
-  <rect x="180" y="305" width="240" height="36" fill="#b3122d" transform="rotate(-2 300 323)"/>
+  <rect x="180" y="305" width="240" height="36" fill="#b5121b" transform="rotate(-2 300 323)"/>
   <text x="300" y="331" fill="#efe9e1" font-family="Consolas, monospace" font-size="22" font-weight="bold" text-anchor="middle" transform="rotate(-2 300 323)">22/tcp open ssh</text>
-  <text x="300" y="372" fill="#8a8590" font-family="Consolas, monospace" font-size="14" text-anchor="middle">(замени меня на свой мем в папке memes/)</text>
+  <text x="300" y="372" fill="#8c8c8c" font-family="Consolas, monospace" font-size="14" text-anchor="middle">(замени меня на свой мем в папке memes/)</text>
 </svg>
