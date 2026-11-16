@@ -1579,7 +1579,10 @@ function renderLore() {
   $("customLoreList").innerHTML = (state.customLore || []).map(l =>
     '<div class="card lore"><div class="row" style="justify-content:space-between;align-items:flex-start;flex-wrap:nowrap">' +
       '<h3>' + esc(l.title) + '</h3>' +
-      '<button class="icon-btn" title="Удалить" onclick="deleteCustomLore(\'' + l.id + '\')">🗑️</button></div>' +
+      '<div class="row" style="flex-wrap:nowrap;gap:2px">' +
+        '<button class="btn small" title="Скопировать, чтобы скинуть в Telegram" onclick="shareCustomLore(\'' + l.id + '\')">📋 Скинуть Серёже</button>' +
+        '<button class="icon-btn" title="Удалить" onclick="deleteCustomLore(\'' + l.id + '\')">🗑️</button>' +
+      '</div></div>' +
       '<p>' + esc(l.text) + '</p>' +
       '<div class="muted mono" style="font-size:.7rem;margin-top:8px">от Арсена · ' + fmtDate(l.ts) + '</div>' +
     '</div>').join("");
@@ -1609,6 +1612,19 @@ function addCustomLore() {
   toast("📖 История добавлена в лор");
 }
 
+// Копируем историю в буфер — Арсен кидает её Серёже, а тот добавляет в общий лор
+async function shareCustomLore(id) {
+  const l = (state.customLore || []).find(x => x.id === id);
+  if (!l) return;
+  const text = "📖 Лор от Арсена: " + l.title + "\n\n" + l.text;
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const t = document.createElement("textarea");
+    t.value = text; document.body.appendChild(t); t.select(); document.execCommand("copy"); t.remove();
+  }
+  toast("📋 Скопировано — кидай Серёже в Telegram");
+}
+
 function deleteCustomLore(id) {
   if (!confirm("Удалить эту историю из лора?")) return;
   state.customLore = state.customLore.filter(l => l.id !== id);
@@ -1620,6 +1636,24 @@ function deleteCustomLore(id) {
    Пароль → PBKDF2 (600 000 раундов) → ключ AES-256 → расшифровываем secret.js
    ===================================================================== */
 const fromB64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+let secretItems = null;   // расшифрованные шутки (живут только до перезагрузки страницы)
+
+// Показываем расшифрованные шутки: открыты только те, на которые хватает XP
+function renderSecret() {
+  if (!secretItems) return;
+  const xp = totalXP();
+  const list = secretItems.slice().sort((a, b) => (a.xp || 0) - (b.xp || 0));
+  const opened = list.filter(l => xp >= (l.xp || 0)).length;
+  $("secretOut").innerHTML =
+    '<div class="muted mono" style="font-size:.75rem;margin-top:14px">Открыто ' + opened + ' из ' + list.length + '</div>' +
+    list.map(l => {
+      const need = l.xp || 0, box = 'border-top:1px solid var(--border);padding-top:14px;margin-top:14px';
+      if (xp >= need) return '<div class="lore" style="' + box + '"><h3>' + esc(l.title) + '</h3><p>' + esc(l.text) + '</p></div>';
+      return '<div class="lore locked-lore" style="' + box + '"><h3>🔒 ' + "█".repeat(Math.min(14, Math.max(5, l.title.length))) + '</h3>' +
+        '<p class="muted">Откроется на <b>' + need + ' XP</b> · осталось ' + (need - xp) + '</p>' +
+        '<div class="bar" style="margin-top:10px"><div style="width:' + Math.min(100, xp / need * 100) + '%"></div></div></div>';
+    }).join("");
+}
 
 async function unlockSecret() {
   const s = window.SECRET_LORE;
@@ -1635,10 +1669,8 @@ async function unlockSecret() {
       { name: "PBKDF2", salt: fromB64(s.salt), iterations: s.iter, hash: "SHA-256" },
       baseKey, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
     const plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: fromB64(s.iv) }, key, fromB64(s.data));
-    const items = JSON.parse(new TextDecoder().decode(plain));
-    $("secretOut").innerHTML = items.map(l =>
-      '<div class="lore" style="border-top:1px solid var(--border);padding-top:14px;margin-top:14px">' +
-      '<h3>' + esc(l.title) + '</h3><p>' + esc(l.text) + '</p></div>').join("");
+    secretItems = JSON.parse(new TextDecoder().decode(plain));
+    renderSecret();
     $("secretPass").value = "";
     toast("🔓 Доступ получен");
   } catch (e) {
@@ -1801,6 +1833,7 @@ function render() {
   renderBosses();
   renderEnglish();
   renderLore();
+  renderSecret();
 }
 
 initWords();
