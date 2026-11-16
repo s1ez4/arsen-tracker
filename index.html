@@ -139,6 +139,10 @@ const LORE = [
 
 /* --- 3. МЕМЫ из папки memes/ рядом с index.html. Просто имена файлов. --- */
 const MEMES = [
+  "klim1.webp",
+  "klim2.webp",
+  "klim3.webp",
+  "klim4.webp",
   "example.svg",
 ];
 
@@ -299,18 +303,23 @@ const COFFEE_MIN_XP = 50;
 const PROGRESS_MEMES = {
   start: [   // журнал пустой
     { icon: "🐣", title: "Начало пути", sub: "Каждый пентестер когда-то не знал, что такое ls" },
+    { img: "klim3.webp", icon: "🧠", title: "Сначала думаем", sub: "Потом ls. Потом root" },
   ],
   coffee: [  // есть долг по кофе
+    { img: "klim4.webp", icon: "☕", title: "Где мой кофе", sub: "<b>{n}</b> кофе долга. Коллектор уже здесь" },
     { icon: "☕", title: "Должен <b>{n}</b> кофе", sub: "Серёжа помнит. Серёжа всегда помнит" },
     { icon: "☕", title: "Кредитная история", sub: "<b>{n}</b> кофе просрочено. Коллекторы ждут у бассейна" },
   ],
   danger: [  // с пятницы, а до 50 XP за неделю не хватает
     { icon: "⏳", title: "Конец недели близко", sub: "А до нормы ещё <b>{n}</b> XP. Кофе сам себя не купит" },
+    { img: "klim2.webp", icon: "👊", title: "Добивай неделю", sub: "Осталось <b>{n}</b> XP. Это не просьба" },
   ],
   boss: [    // XP на следующий уровень есть, а босс не закрыт
     { icon: "👹", title: "XP набран", sub: "А босс почему-то всё ещё жив" },
+    { img: "klim3.webp", icon: "🧠", title: "Думай", sub: "XP есть, а босс живой. Голова — главный эксплойт" },
   ],
   noStudy: [ // сегодня ещё не отмечен «День учёбы»
+    { img: "klim2.webp", icon: "👊", title: "Иди учись", sub: "Это прямой удар по прокрастинации" },
     { icon: "👀", title: "Зашёл проверить прогресс", sub: "Прогресс тоже зашёл проверить тебя. Тебя нет" },
     { icon: "👣", title: "Цифровой след за сегодня", sub: "0 коммитов, 0 флагов, 3 часа в рилсах" },
     { icon: "🏊", title: "Задержал дыхание", sub: "Как и свою учёбу. Выныривай" },
@@ -319,10 +328,12 @@ const PROGRESS_MEMES = {
   ],
   streak: [  // серия от 7 дней
     { icon: "🔥", title: "<b>{n}</b> дней подряд", sub: "Персистентность уровня малвари" },
+    { img: "klim1.webp", icon: "🔥", title: "Поза победителя", sub: "<b>{n}</b> дней подряд. Заслужил стоять вот так" },
     { icon: "🗽", title: "Американская мечта", sub: "<b>{n}</b> дней подряд — и она всё ближе" },
   ],
   done: [    // сегодня день учёбы отмечен
     { icon: "🏊", title: "День засчитан", sub: "Можно и в бассейн. Дыши ровно, как nmap -T2" },
+    { img: "klim1.webp", icon: "✅", title: "День засчитан", sub: "Стоишь так же уверенно, как Kali после апдейта" },
     { icon: "✅", title: "Сегодня ты не NPC", sub: "Цифровой след: +1 день, который не стыдно показать" },
     { icon: "☀️", title: "Не любишь зиму", sub: "Любишь, когда тепло. Сегодня ты стал на день ближе к тёплому офферу" },
     { icon: "🗽", title: "Американская мечта", sub: "Оффер, 100к+ и чтобы тепло. День засчитан — едем дальше" },
@@ -452,7 +463,8 @@ const PROGRESS_MEMES = {
     border: 2px solid #fff; padding: 3px; aspect-ratio: 4 / 3; display: grid; place-items: center;
     font-size: 4.5rem; background: #0a0a0a; overflow: hidden;
   }
-  .dm-frame img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .dm-frame img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .dm-frame.has-img { display: block; aspect-ratio: auto; height: 340px; }
   .dm-title { font-family: "Times New Roman", Georgia, serif; font-size: 1.55rem; text-transform: uppercase; color: #fff; margin-top: 14px; letter-spacing: 1px; line-height: 1.15; }
   .dm-sub { font-family: "Times New Roman", Georgia, serif; font-size: 1rem; color: #d0d0d0; margin-top: 6px; }
   .dm-title b, .dm-sub b { color: var(--accent-text); font-weight: inherit; }
@@ -593,7 +605,7 @@ const PROGRESS_MEMES = {
   .meme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
   .meme { position: relative; border: 1px solid var(--border); background: #000; cursor: zoom-in; }
   .meme:hover { border-color: var(--text); }
-  .meme img { width: 100%; height: 160px; object-fit: cover; display: block; }
+  .meme img { width: 100%; height: 200px; object-fit: contain; display: block; background: #0a0a0a; }
   .meme .del { position: absolute; top: 4px; right: 4px; background: #000; }
   .meme .broken { height: 160px; display: grid; place-items: center; font-size: .75rem; color: var(--muted); padding: 8px; text-align: center; }
   #memeOfDay img { max-width: 100%; max-height: 360px; display: block; margin: 0 auto; cursor: zoom-in; border: 1px solid var(--border-strong); }
@@ -1095,6 +1107,7 @@ function renderStatusMeme() {
   const list = PROGRESS_MEMES[key] && PROGRESS_MEMES[key].length ? PROGRESS_MEMES[key] : PROGRESS_MEMES.done;
   const m = list[dayNumber(new Date()) % list.length];
   const fill = t => String(t || "").replace(/\{n\}/g, n);
+  $("dmFrame").classList.toggle("has-img", !!m.img);
   $("dmFrame").innerHTML = m.img
     ? '<img src="memes/' + esc(m.img) + '" alt="" onerror="this.replaceWith(document.createTextNode(\'' + (m.icon || "🖼️") + '\'))">'
     : (m.icon || "💀");
