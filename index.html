@@ -192,6 +192,9 @@ const BOSSES = [
 const MONEY_START = 40;
 const MONEY_GOAL = 100;
 
+/* --- 9. КОФЕ-ШТРАФ: неделя (пн–вс), где набрано меньше этого XP, = слита → кофе Серёже ☕ --- */
+const COFFEE_MIN_XP = 50;
+
 /* =====================================================================
    КОНЕЦ НАСТРОЕК. Ниже — оформление и логика сайта.
    ===================================================================== */
@@ -560,9 +563,18 @@ const MONEY_GOAL = 100;
     border: 3px solid var(--text); box-shadow: 6px 6px 0 var(--accent), -3px -3px 0 var(--cyan); transform: rotate(-1deg);
   }
 
+  /* ===== КОФЕ-ДОЛГ ===== */
+  .coffee-debt { font-size: 1.05rem; margin-top: 12px; }
+  .coffee-debt b { color: var(--accent-text); font-family: var(--mono); }
+  .coffee-debt .cups { letter-spacing: 2px; }
+  .coffee-warn { color: var(--accent-text); font-size: .85rem; margin-top: 8px; }
+  .coffee-warn:empty { display: none; }
+  .card.danger { box-shadow: inset 3px 0 0 var(--accent), inset 0 0 40px rgba(179,18,45,.18); animation: pulse 2.5s ease-in-out infinite; }
+  @keyframes pulse { 50% { box-shadow: inset 3px 0 0 var(--accent), inset 0 0 60px rgba(179,18,45,.3); } }
+
   /* Тем, у кого в системе включено «уменьшить анимацию», — без глитча и бегущих полос */
   @media (prefers-reduced-motion: reduce) {
-    .glitch, .glitch::before, .glitch::after, .bar > div::after, .glitch .cursor { animation: none; }
+    .glitch, .glitch::before, .glitch::after, .bar > div::after, .glitch .cursor, .card.danger { animation: none; }
   }
 </style>
 </head>
@@ -617,6 +629,21 @@ const MONEY_GOAL = 100;
         <div class="bar gold" style="height:8px;margin-top:8px"><div id="moneyBar"></div></div>
         <button class="btn small ghost" style="margin-top:8px" onclick="editMoney()">изменить</button>
       </div>
+    </div>
+
+    <div class="card coffee" id="coffeeCard">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">кофе_долг.log</h2>
+        <button class="btn small" id="coffeePayBtn" onclick="payCoffee()">☕ Кофе поставлен</button>
+      </div>
+      <div class="coffee-debt" id="coffeeDebt"></div>
+      <div class="bar" style="height:10px;margin-top:10px"><div id="coffeeBar"></div></div>
+      <div class="bar-text"><span id="coffeeWeek"></span><span id="coffeeLeft"></span></div>
+      <div class="coffee-warn" id="coffeeWarn"></div>
+      <details style="margin-top:8px">
+        <summary class="muted" style="cursor:pointer;font-size:.85rem">Слитые недели</summary>
+        <div id="coffeeList" style="margin-top:6px"></div>
+      </details>
     </div>
 
     <div class="card">
@@ -786,6 +813,7 @@ function defaultState() {
     levelSeen: 0,     // какой уровень Арсен уже «праздновал»
     words: null,      // словарь (создаётся из START_WORDS)
     money: { now: MONEY_START, goal: MONEY_GOAL },
+    coffeePaid: 0,    // сколько кофе уже поставлено Серёже
   };
 }
 
@@ -872,6 +900,28 @@ function xpThisWeek() {
   return state.log.filter(e => new Date(e.ts) >= start).reduce((s, e) => s + e.xp, 0);
 }
 
+// Кофе-штраф: считаем ЗАКОНЧИВШИЕСЯ недели, где XP < COFFEE_MIN_XP.
+// Первую неделю (когда Арсен только начал, она обычно неполная) не считаем.
+function calcCoffee() {
+  const failed = [];
+  if (state.log.length) {
+    const firstTs = Math.min(...state.log.map(e => +new Date(e.ts)));
+    const w = weekStart(new Date(firstTs)); w.setHours(0, 0, 0, 0);
+    w.setDate(w.getDate() + 7);                       // пропускаем первую неделю
+    const thisWeek = weekStart(new Date()); thisWeek.setHours(0, 0, 0, 0);
+    while (w < thisWeek) {
+      const end = new Date(w); end.setDate(end.getDate() + 7);
+      const xp = state.log
+        .filter(e => { const t = new Date(e.ts); return t >= w && t < end; })
+        .reduce((s, e) => s + e.xp, 0);
+      if (xp < COFFEE_MIN_XP) failed.push({ start: new Date(w), xp });
+      w.setDate(w.getDate() + 7);
+    }
+  }
+  const paid = state.coffeePaid || 0;
+  return { failed, paid, debt: Math.max(0, failed.length - paid) };
+}
+
 /* =====================================================================
    ОТРИСОВКА ГЛАВНОЙ
    ===================================================================== */
@@ -948,6 +998,50 @@ function renderHome() {
   const last = state.log[state.log.length - 1];
   $("undoBtn").disabled = !last;
   $("lastAction").textContent = last ? "Последнее: " + actionLabel(last.type) + " (+" + last.xp + ")" : "";
+
+  renderCoffee();
+}
+
+/* =====================================================================
+   КОФЕ-ДОЛГ
+   ===================================================================== */
+function renderCoffee() {
+  const c = calcCoffee();
+  const wx = xpThisWeek();
+  $("coffeeDebt").innerHTML = c.debt
+    ? '<span class="cups">' + "☕".repeat(Math.min(c.debt, 10)) + '</span> Должен Серёже: <b>' + c.debt + ' кофе</b>'
+    : '✅ Долгов нет. Серёжа без халявного кофе — и это твоя заслуга.';
+  $("coffeePayBtn").disabled = !c.debt;
+
+  setTimeout(() => { $("coffeeBar").style.width = Math.min(100, wx / COFFEE_MIN_XP * 100) + "%"; }, 30);
+  $("coffeeWeek").textContent = "Эта неделя: " + wx + " / " + COFFEE_MIN_XP + " XP";
+  $("coffeeLeft").textContent = wx >= COFFEE_MIN_XP ? "засчитана ✅" : "осталось " + (COFFEE_MIN_XP - wx);
+
+  // С пятницы предупреждаем, если до нормы не хватает
+  const dow = (new Date().getDay() + 6) % 7;          // 0 = пн … 6 = вс
+  const warn = wx < COFFEE_MIN_XP && dow >= 4;
+  $("coffeeWarn").textContent = warn
+    ? "⚠️ " + (dow === 6 ? "Сегодня последний день недели" : "До конца недели " + (7 - dow) + " дн.") +
+      " — добери " + (COFFEE_MIN_XP - wx) + " XP, или ставишь Серёже кофе ☕"
+    : "";
+  $("coffeeCard").classList.toggle("danger", warn);
+
+  const fmt = d => d.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
+  $("coffeeList").innerHTML = c.failed.length
+    ? c.failed.map((f, i) => {
+        const end = new Date(f.start); end.setDate(end.getDate() + 6);
+        return '<div class="word-row"><span>' + (i < c.paid ? "✅" : "☕") + '</span>' +
+               '<span class="ru">' + fmt(f.start) + "–" + fmt(end) + '</span>' +
+               '<span class="muted mono">' + f.xp + ' XP' + (i < c.paid ? " · отдал" : " · должен") + '</span></div>';
+      }).reverse().join("")
+    : '<div class="muted" style="font-size:.85rem">Ни одной слитой недели 💪</div>';
+}
+
+function payCoffee() {
+  if (!confirm("Серёжа подтвердил, что кофе получен? ☕")) return;
+  state.coffeePaid = (state.coffeePaid || 0) + 1;
+  afterChange();
+  toast("☕ Долг уменьшен. Респект за честность.");
 }
 
 function renderPhrase() {
@@ -1439,9 +1533,15 @@ function buildWeeklyReport() {
     "⚡ XP за неделю: " + xp + " (всего " + totalXP() + ")",
     "🏅 Уровень: " + lvl + " · " + L.title + (next && next.xp ? " (до «" + next.title + "»: " + Math.max(0, next.xp - totalXP()) + " XP)" : ""),
     "🔥 Серия: " + calcStreak().streak + " дн.",
+    xp >= COFFEE_MIN_XP
+      ? "✅ Неделя засчитана (" + xp + " ≥ " + COFFEE_MIN_XP + " XP)"
+      : new Date().getDay() === 0
+        ? "⚠️ Неделя слита: " + xp + " / " + COFFEE_MIN_XP + " XP → кофе Серёже ☕"
+        : "⏳ Пока не добрал: " + xp + " / " + COFFEE_MIN_XP + " XP (до воскресенья, иначе кофе ☕)",
+    "☕ Долг кофе: " + calcCoffee().debt,
     "",
     "📚 Что сделал:",
-    acts.length ? acts.join("\n") : "• пока ничего… (кофе Серёже ☕)",
+    acts.length ? acts.join("\n") : "• пока ничего…",
     notes.length ? "\n📝 Заметки:\n" + notes.join("\n") : "",
     "",
     "🧱 Где застрял: ",
